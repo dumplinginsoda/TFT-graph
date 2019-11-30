@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <title>Network</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <script src="./static/champion.js" ></script>
+  <style type="text/css">
+    #mynetwork {
+      /*width: 1200px;*/
+      height: 800px;
+      min-height:100vh;
+      border: 1px solid lightgray;
+    }
+  </style> 
+</head>
+<body>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+
+  let champions = []
+  let traits = []
+  let championToTrait = []
+
+  let counter = 0
+
+  for (const championDatum of championData) {
+    let championId = counter++
+
+    const nodeObject = {}
+    nodeObject.id = championId
+    nodeObject.label = championDatum.champion
+
+    champions.push(nodeObject)
+
+    championDatum.traits.forEach((trait) => {
+      let traitId
+      let traitIndex = traits.findIndex(currentTrait => currentTrait.label === trait)
+      
+      if (traitIndex === -1 || traits.length === 0) {
+
+        traitId = counter++
+
+        const nodeObject = {}
+        nodeObject.id = traitId
+        nodeObject.label = trait
+
+
+        traits.push(nodeObject)
+
+      } else {
+        traitId = traits[traitIndex].id
+      }
+
+      let relation = {}
+
+      relation.from = traitId
+      relation.to = championId
+
+      championToTrait.push(relation)
+    })
+  }
+
+
+  console.log(traits)
+// create an array with nodes
+  var nodes = new vis.DataSet(champions.concat(traits));
+ 
+// create an array with edges
+//   [
+//   {from: 1, to: 3},
+//   {from: 1, to: 2},
+//   {from: 2, to: 4},
+//   {from: 2, to: 5},
+//   {from: 3, to: 3}
+// ]
+  var edges = new vis.DataSet(championToTrait)
+ 
+// {
+//    id: 1,
+//    label: "Main",
+//    image: DIR + "Network-Pipe-icon.png",
+//    shape: "image"
+//  }
+//
+  // create a network
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = {
+    interaction: {
+      clickToUse: true,
+      multiselect: true,
+    }
+  };
+  var network = new vis.Network(container, data, options);
+</script> 
+</body>
+</html>
